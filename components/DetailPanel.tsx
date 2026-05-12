@@ -28,14 +28,14 @@ interface Props {
 export default function DetailPanel({ node, onClose }: Props) {
   if (!node) {
     return (
-      <aside className="flex h-full min-h-0 w-full shrink-0 items-center justify-center bg-slate-50 text-sm text-slate-400">
+      <aside className="flex min-h-0 w-full flex-1 items-center justify-center bg-slate-50 text-sm text-slate-400">
         Click a node to see details
       </aside>
     );
   }
 
   return (
-    <aside className="flex min-h-0 w-full shrink-0 flex-col overflow-y-auto bg-white">
+    <aside className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain bg-white [scrollbar-gutter:stable]">
       {/* Header */}
       <div className="px-5 pt-5 pb-4 border-b border-slate-100 sticky top-0 bg-white z-10">
         <div className="flex items-start justify-between gap-2">
@@ -120,25 +120,6 @@ export default function DetailPanel({ node, onClose }: Props) {
                   <p className="text-slate-600 mt-0.5 leading-snug">
                     {d.description}
                   </p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {/* Dependencies */}
-        {node.dependencies.length > 0 && (
-          <section>
-            <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
-              <span aria-hidden>🔗</span> Dependencies
-            </h3>
-            <ul className="space-y-1">
-              {node.dependencies.map((d) => (
-                <li
-                  key={d}
-                  className="text-slate-500 bg-slate-50 rounded px-2 py-1 leading-snug"
-                >
-                  {d}
                 </li>
               ))}
             </ul>

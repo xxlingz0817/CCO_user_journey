@@ -100,8 +100,8 @@ export default function Home() {
       </header>
 
       {/* Main content */}
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 min-w-0">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <div className="min-h-0 flex-1 min-w-0">
           <JourneyMap
             nodes={filteredNodes}
             edges={edges}
