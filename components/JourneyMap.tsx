@@ -3,6 +3,7 @@
 import ReactFlow, {
   Background,
   Controls,
+  Panel,
   type Node,
   type Edge,
   type NodeProps,
@@ -28,6 +29,16 @@ const stageColors: Record<string, string> = {
   Support: "#fee2e2",
 };
 
+const STAGE_LEGEND_ORDER = [
+  "Setup",
+  "CCO Creation",
+  "Validation",
+  "Activation",
+  "Support",
+] as const;
+
+const ROLE_LEGEND_ORDER: Role[] = ["advertiser", "technical", "internal"];
+
 // ─── Custom node ─────────────────────────────────────────────────────────────
 interface FlowNodeData {
   journey: JourneyNode;
@@ -39,8 +50,6 @@ interface FlowNodeData {
 function JourneyFlowNode({ data }: NodeProps<FlowNodeData>) {
   const { journey, isSelected, dimmed, onClick } = data;
   const bg = stageColors[journey.stage] ?? "#f3f4f6";
-
-  const hasPain = journey.painPoints.some((p) => p.severity === "high");
 
   return (
     <>
@@ -76,11 +85,6 @@ function JourneyFlowNode({ data }: NodeProps<FlowNodeData>) {
               className="w-2 h-2 rounded-full"
             />
           ))}
-          {hasPain && (
-            <span className="text-[10px] text-red-500 font-bold ml-auto">
-              ⚠
-            </span>
-          )}
         </div>
       </div>
       <Handle type="source" position={Position.Right} style={{ opacity: 0 }} />
@@ -121,15 +125,20 @@ function buildFlowElements(
     };
   });
 
-  const flowEdges: Edge[] = edges.map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    label: e.label,
-    animated: e.label === "issue found",
-    style: { stroke: "#94a3b8", strokeWidth: 1.5 },
-    labelStyle: { fontSize: 10, fill: "#94a3b8" },
-  }));
+  const flowEdges: Edge[] = edges.map((e) => {
+    const issueHandoff = e.label === "issue found";
+    return {
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      animated: false,
+      style: {
+        stroke: "#94a3b8",
+        strokeWidth: 1.5,
+        ...(issueHandoff ? { strokeDasharray: "5 5" } : {}),
+      },
+    };
+  });
 
   return { flowNodes, flowEdges };
 }
@@ -171,6 +180,35 @@ export default function JourneyMap({
     >
       <Background color="#e2e8f0" gap={20} />
       <Controls showInteractive={false} />
+      <Panel
+        position="top-left"
+        className="!m-3 max-w-[calc(100%-1.5rem)] rounded-lg border border-slate-200/90 bg-white/95 px-3 py-2 shadow-sm backdrop-blur-sm"
+      >
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          {STAGE_LEGEND_ORDER.map((stage) => (
+            <div key={stage} className="flex items-center gap-1.5">
+              <span
+                style={{ background: stageColors[stage] }}
+                className="h-3 w-3 shrink-0 rounded border border-slate-200"
+              />
+              <span className="text-xs text-slate-600">
+                {stage === "CCO Creation" ? "Creation" : stage}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-slate-100 pt-2">
+          {ROLE_LEGEND_ORDER.map((r) => (
+            <div key={r} className="flex items-center gap-1.5">
+              <span
+                style={{ background: roleMeta[r].color }}
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+              />
+              <span className="text-xs text-slate-600">{roleMeta[r].label}</span>
+            </div>
+          ))}
+        </div>
+      </Panel>
     </ReactFlow>
   );
 }

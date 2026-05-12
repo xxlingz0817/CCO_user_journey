@@ -28,14 +28,14 @@ interface Props {
 export default function DetailPanel({ node, onClose }: Props) {
   if (!node) {
     return (
-      <aside className="w-80 shrink-0 flex items-center justify-center text-slate-400 text-sm border-l border-slate-200 bg-slate-50">
+      <aside className="flex h-full min-h-0 w-full shrink-0 items-center justify-center bg-slate-50 text-sm text-slate-400">
         Click a node to see details
       </aside>
     );
   }
 
   return (
-    <aside className="w-80 shrink-0 border-l border-slate-200 bg-white overflow-y-auto flex flex-col">
+    <aside className="flex min-h-0 w-full shrink-0 flex-col overflow-y-auto bg-white">
       {/* Header */}
       <div className="px-5 pt-5 pb-4 border-b border-slate-100 sticky top-0 bg-white z-10">
         <div className="flex items-start justify-between gap-2">
@@ -77,7 +77,7 @@ export default function DetailPanel({ node, onClose }: Props) {
         {node.painPoints.length > 0 && (
           <section>
             <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
-              <span>⚠</span> Pain Points
+              <span aria-hidden>⚠️</span> Pain Points
             </h3>
             <ul className="space-y-2">
               {node.painPoints.map((p, i) => (
@@ -111,7 +111,7 @@ export default function DetailPanel({ node, onClose }: Props) {
         {node.designOpportunities.length > 0 && (
           <section>
             <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
-              <span>💡</span> Design Opportunities
+              <span aria-hidden>💡</span> Design Opportunities
             </h3>
             <ul className="space-y-2">
               {node.designOpportunities.map((d, i) => (
@@ -129,12 +129,17 @@ export default function DetailPanel({ node, onClose }: Props) {
         {/* Dependencies */}
         {node.dependencies.length > 0 && (
           <section>
-            <h3 className="font-semibold text-slate-700 mb-2">
-              Dependencies
+            <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
+              <span aria-hidden>🔗</span> Dependencies
             </h3>
-            <ul className="list-disc list-inside text-slate-500 space-y-0.5">
+            <ul className="space-y-1">
               {node.dependencies.map((d) => (
-                <li key={d}>{d}</li>
+                <li
+                  key={d}
+                  className="text-slate-500 bg-slate-50 rounded px-2 py-1 leading-snug"
+                >
+                  {d}
+                </li>
               ))}
             </ul>
           </section>
@@ -143,8 +148,8 @@ export default function DetailPanel({ node, onClose }: Props) {
         {/* Open Questions */}
         {node.openQuestions.length > 0 && (
           <section>
-            <h3 className="font-semibold text-slate-700 mb-2">
-              Open Questions
+            <h3 className="font-semibold text-slate-700 mb-2 flex items-center gap-1">
+              <span aria-hidden>❓</span> Open Questions
             </h3>
             <ul className="space-y-1">
               {node.openQuestions.map((q, i) => (

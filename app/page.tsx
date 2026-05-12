@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import DetailPanel from "@/components/DetailPanel";
+import ResizablePanel from "@/components/ResizablePanel";
 import {
   allNodes,
   webEdges,
@@ -26,20 +27,6 @@ const roleOptions: { value: Role | "all"; label: string }[] = [
   { value: "advertiser", label: "Advertiser / Marketer" },
   { value: "technical", label: "Technical Implementer" },
   { value: "internal", label: "Internal / PSO" },
-];
-
-const stageLegend = [
-  { stage: "Setup", color: "#e0f2fe" },
-  { stage: "CCO Creation", color: "#ede9fe" },
-  { stage: "Validation", color: "#fef9c3" },
-  { stage: "Activation", color: "#dcfce7" },
-  { stage: "Support", color: "#fee2e2" },
-];
-
-const roleDots: { role: Role; color: string; label: string }[] = [
-  { role: "advertiser", color: "#6366f1", label: "Advertiser" },
-  { role: "technical", color: "#0ea5e9", label: "Technical" },
-  { role: "internal", color: "#f59e0b", label: "Internal / PSO" },
 ];
 
 export default function Home() {
@@ -70,14 +57,9 @@ export default function Home() {
     <div className="h-screen flex flex-col bg-slate-50 font-sans">
       {/* Top bar */}
       <header className="flex items-center gap-4 px-5 py-3 bg-white border-b border-slate-200 shrink-0 flex-wrap">
-        <div className="flex flex-col leading-tight mr-2">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            TikTok Monetization Signal
-          </span>
-          <span className="text-sm font-bold text-slate-800">
-            CCO User Journey
-          </span>
-        </div>
+        <h1 className="text-lg font-bold text-slate-800 mr-2 shrink-0 leading-tight">
+          CCO User Journey
+        </h1>
 
         {/* Branch toggle */}
         <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
@@ -115,35 +97,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        <div className="flex-1" />
-
-        {/* Legend */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap">
-            {stageLegend.map((s) => (
-              <div key={s.stage} className="flex items-center gap-1">
-                <span
-                  style={{ background: s.color }}
-                  className="w-3 h-3 rounded border border-slate-200"
-                />
-                <span className="text-[10px] text-slate-500">{s.stage}</span>
-              </div>
-            ))}
-          </div>
-          <div className="w-px h-4 bg-slate-200" />
-          <div className="flex items-center gap-2 flex-wrap">
-            {roleDots.map((r) => (
-              <div key={r.role} className="flex items-center gap-1">
-                <span
-                  style={{ background: r.color }}
-                  className="w-2.5 h-2.5 rounded-full"
-                />
-                <span className="text-[10px] text-slate-500">{r.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </header>
 
       {/* Main content */}
@@ -158,7 +111,9 @@ export default function Home() {
             onSelectNode={handleSelectNode}
           />
         </div>
-        <DetailPanel node={selectedNode} onClose={() => setSelectedId(null)} />
+        <ResizablePanel defaultVw={40} minVw={20} maxVw={70}>
+          <DetailPanel node={selectedNode} onClose={() => setSelectedId(null)} />
+        </ResizablePanel>
       </div>
     </div>
   );
