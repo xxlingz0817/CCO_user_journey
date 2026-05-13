@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
-import DetailPanel from "@/components/DetailPanel";
+import DetailPanel, { type NodeDetailPatch } from "@/components/DetailPanel";
 import ResizablePanel from "@/components/ResizablePanel";
 import {
   allNodes,
@@ -12,6 +12,20 @@ import {
   type Role,
   type JourneyNode,
 } from "@/data/ccoJourney";
+
+function mergeNodeDetail(
+  base: JourneyNode,
+  patch?: NodeDetailPatch
+): JourneyNode {
+  if (!patch) return base;
+  return {
+    ...base,
+    painPoints: patch.painPoints ?? base.painPoints,
+    designOpportunities:
+      patch.designOpportunities ?? base.designOpportunities,
+    openQuestions: patch.openQuestions ?? base.openQuestions,
+  };
+}
 
 const JourneyMap = dynamic(() => import("@/components/JourneyMap"), {
   ssr: false,
@@ -33,6 +47,9 @@ export default function Home() {
   const [branch, setBranch] = useState<Branch>("web");
   const [roleFilter, setRoleFilter] = useState<Role | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [nodeDetailOverrides, setNodeDetailOverrides] = useState<
+    Record<string, NodeDetailPatch>
+  >({});
 
   const filteredNodes = useMemo(
     () => allNodes.filter((n) => n.branch.includes(branch)),
@@ -41,8 +58,21 @@ export default function Home() {
 
   const edges = branch === "web" ? webEdges : appEdges;
 
-  const selectedNode: JourneyNode | null =
-    allNodes.find((n) => n.id === selectedId) ?? null;
+  const selectedNode: JourneyNode | null = useMemo(() => {
+    const base = allNodes.find((n) => n.id === selectedId) ?? null;
+    if (!base) return null;
+    return mergeNodeDetail(base, nodeDetailOverrides[base.id]);
+  }, [selectedId, nodeDetailOverrides]);
+
+  const handleUpdateNodeDetail = useCallback(
+    (nodeId: string, patch: NodeDetailPatch) => {
+      setNodeDetailOverrides((prev) => ({
+        ...prev,
+        [nodeId]: { ...prev[nodeId], ...patch },
+      }));
+    },
+    []
+  );
 
   const handleSelectNode = useCallback((id: string | null) => {
     setSelectedId(id);
@@ -112,7 +142,12 @@ export default function Home() {
           />
         </div>
         <ResizablePanel defaultVw={40} minVw={20} maxVw={70}>
-          <DetailPanel node={selectedNode} onClose={() => setSelectedId(null)} />
+          <DetailPanel
+            key={selectedId ?? "none"}
+            node={selectedNode}
+            onClose={() => setSelectedId(null)}
+            onUpdateNode={handleUpdateNodeDetail}
+          />
         </ResizablePanel>
       </div>
     </div>
